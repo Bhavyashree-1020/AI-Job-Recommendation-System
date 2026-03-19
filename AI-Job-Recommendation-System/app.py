@@ -18,7 +18,7 @@ cursor = conn.cursor()
 # -------------------------------
 # LOAD DATASET (USE ORIGINAL FILE)
 # -------------------------------
-df = pd.read_csv("job_descriptions.csv", nrows=1000)
+df = pd.read_csv("jobs_small.csv")
 
 # -------------------------------
 # DATA CLEANING (DADV)
