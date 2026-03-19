@@ -24,14 +24,32 @@ df = pd.read_csv("jobs_small.csv")
 # DATA CLEANING (DADV)
 # -------------------------------
 df.drop_duplicates(inplace=True)
-df.dropna(subset=["Job Title", "Job Description", "skills"], inplace=True)
+required_cols = [col for col in ["Job Title", "Job Description", "skills"] if col in df.columns]
+df.dropna(subset=required_cols, inplace=True)
 
 df["skills"] = df["skills"].astype(str).str.lower()
 df["Job Description"] = df["Job Description"].astype(str).str.lower()
 
 # Fill missing optional columns
-df["Company"] = df["Company"].fillna("Not Available")
-df["location"] = df["location"].fillna("Not Available")
+# Handle missing Job Description
+if "Job Description" in df.columns:
+    df["Job Description"] = df["Job Description"].fillna("")
+
+# Handle missing skills
+if "skills" in df.columns:
+    df["skills"] = df["skills"].fillna("")
+
+# Handle missing Company
+if "Company" in df.columns:
+    df["Company"] = df["Company"].fillna("Not Available")
+else:
+    df["Company"] = "Not Available"
+
+# Handle missing location
+if "location" in df.columns:
+    df["location"] = df["location"].fillna("Not Available")
+else:
+    df["location"] = "Not Available"
 
 # -------------------------------
 # PREPROCESSING
