@@ -64,10 +64,10 @@ if "skills" in df.columns:
     df["skills"] = df["skills"].fillna("")
 
 # Handle missing Company
-if "Company" in df.columns:
-    df["Company"] = df["Company"].fillna("Not Available")
+if "company" in df.columns:
+    df["company"] = df["company"].fillna("Not Available")
 else:
-    df["Company"] = "Not Available"
+    df["company"] = "Not Available"
 
 # Handle missing location
 if "location" in df.columns:
@@ -130,7 +130,7 @@ if st.button("Recommend Jobs"):
 
         for i in top_indices:
             title = df.iloc[i]["Job Title"]
-            company = df.iloc[i]["Company"]
+            company = df.iloc[i]["company"]
             location = df.iloc[i]["location"]
             score = round(similarity[0][i] * 100, 2)
 
@@ -138,7 +138,7 @@ if st.button("Recommend Jobs"):
                 jobs_shown.append(title)
 
                 st.write(f"**Job Title:** {title}")
-                st.write(f"**Company:** {company}")
+                st.write(f"**company:** {company}")
                 st.write(f"**Location:** {location}")
                 st.write(f"**Match Score:** {score}%")
                 st.write("---")
