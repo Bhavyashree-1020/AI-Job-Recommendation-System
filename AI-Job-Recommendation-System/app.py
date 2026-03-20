@@ -85,7 +85,7 @@ if st.button("Recommend Jobs"):
         cursor.execute("""
             INSERT INTO users (name, email, skills, qualification, experience)
             VALUES (?, ?, ?, ?, ?)
-        """, (name, email, user_skill, qualification, experience))
+        """, (name, email, skills, qualification, experience))
         conn.commit()
 
         user_id = cursor.lastrowid
