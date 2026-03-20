@@ -83,9 +83,9 @@ if st.button("Recommend Jobs"):
     else:
         # Save user to DB
         cursor.execute("""
-            INSERT INTO users (name, email, skills, qualification, experience)
+            INSERT INTO users (name, email, user_skill, qualification, experience)
             VALUES (?, ?, ?, ?, ?)
-        """, (name, email, skills, qualification, experience))
+        """, (name, email, user_skill, qualification, experience))
         conn.commit()
 
         user_id = cursor.lastrowid
