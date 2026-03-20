@@ -144,7 +144,7 @@ if st.button("Recommend Jobs"):
                 st.write("---")
 
                 # Save recommendation in DB
-                job_id = int(df.iloc[i]["Job Id"])
+                job_id = i
 
                 cursor.execute("""
                     INSERT INTO recommendations (user_id, job_id, similarity_score)
