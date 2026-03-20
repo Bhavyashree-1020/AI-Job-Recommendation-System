@@ -16,6 +16,30 @@ conn = sqlite3.connect("jobs.db", check_same_thread=False)
 cursor = conn.cursor()
 
 # -------------------------------
+# CREATE TABLES (IMPORTANT FIX)
+# -------------------------------
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    email TEXT,
+    skills TEXT,
+    qualification TEXT,
+    experience TEXT
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS recommendations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    job_id INTEGER,
+    similarity_score REAL
+)
+""")
+
+conn.commit()
+# -------------------------------
 # LOAD DATASET (USE ORIGINAL FILE)
 # -------------------------------
 df = pd.read_csv("jobs_small.csv")
