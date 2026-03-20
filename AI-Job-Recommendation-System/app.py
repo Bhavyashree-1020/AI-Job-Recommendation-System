@@ -16,7 +16,7 @@ conn = sqlite3.connect("jobs.db", check_same_thread=False)
 cursor = conn.cursor()
 
 # -------------------------------
-# CREATE TABLES (IMPORTANT FIX)
+# CREATE TABLES
 # -------------------------------
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
@@ -39,46 +39,35 @@ CREATE TABLE IF NOT EXISTS recommendations (
 """)
 
 conn.commit()
+
 # -------------------------------
-# LOAD DATASET (USE ORIGINAL FILE)
+# LOAD DATASET
 # -------------------------------
 df = pd.read_csv("jobs_small.csv")
 
+# Standardize column names
+df.columns = df.columns.str.strip().str.lower()
+
 # -------------------------------
-# DATA CLEANING (DADV)
+# DATA CLEANING
 # -------------------------------
 df.drop_duplicates(inplace=True)
-required_cols = [col for col in ["Job Title", "Job Description", "skills"] if col in df.columns]
+required_cols = [col for col in ["job title", "job description", "skills"] if col in df.columns]
 df.dropna(subset=required_cols, inplace=True)
 
 df["skills"] = df["skills"].astype(str).str.lower()
-df["Job Description"] = df["Job Description"].astype(str).str.lower()
+df["job description"] = df["job description"].astype(str).str.lower()
 
 # Fill missing optional columns
-# Handle missing Job Description
-if "Job Description" in df.columns:
-    df["Job Description"] = df["Job Description"].fillna("")
-
-# Handle missing skills
-if "skills" in df.columns:
-    df["skills"] = df["skills"].fillna("")
-
-# Handle missing Company
-if "company" in df.columns:
-    df["company"] = df["company"].fillna("Not Available")
-else:
-    df["company"] = "Not Available"
-
-# Handle missing location
-if "location" in df.columns:
-    df["location"] = df["location"].fillna("Not Available")
-else:
-    df["location"] = "Not Available"
+df["job description"] = df["job description"].fillna("")
+df["skills"] = df["skills"].fillna("")
+df["company"] = df["company"].fillna("Not Available") if "company" in df.columns else "Not Available"
+df["location"] = df["location"].fillna("Not Available") if "location" in df.columns else "Not Available"
 
 # -------------------------------
 # PREPROCESSING
 # -------------------------------
-df["text"] = df["Job Description"] + " " + df["skills"]
+df["text"] = df["job description"] + " " + df["skills"]
 
 # -------------------------------
 # TF-IDF VECTORIZATION
@@ -129,22 +118,22 @@ if st.button("Recommend Jobs"):
         shown_count = 0
 
         for i in top_indices:
-            title = df.iloc[i]["Job Title"]
-            company = df.iloc[i]["company"]
-            location = df.iloc[i]["location"]
+            title = df.iloc[i]["job title"]
+            company = df.iloc[i]["company"] if "company" in df.columns else "Not Available"
+            location = df.iloc[i]["location"] if "location" in df.columns else "Not Available"
             score = round(similarity[0][i] * 100, 2)
 
             if title not in jobs_shown and shown_count < 5:
                 jobs_shown.append(title)
 
                 st.write(f"**Job Title:** {title}")
-                st.write(f"**company:** {company}")
+                st.write(f"**Company:** {company}")
                 st.write(f"**Location:** {location}")
                 st.write(f"**Match Score:** {score}%")
                 st.write("---")
 
                 # Save recommendation in DB
-                job_id = i
+                job_id = i  # row index as fallback
 
                 cursor.execute("""
                     INSERT INTO recommendations (user_id, job_id, similarity_score)
@@ -155,7 +144,7 @@ if st.button("Recommend Jobs"):
                 shown_count += 1
 
 # -------------------------------
-# DATA VISUALIZATION (DADV)
+# DATA VISUALIZATION
 # -------------------------------
 st.subheader("Top 10 Most Common Skills in Dataset")
 
